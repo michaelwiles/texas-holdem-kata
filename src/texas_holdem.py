@@ -70,4 +70,14 @@ matches = [one_pair, two_pair]
 
 
 def search(cards, deck):
-    return next(m.__name__ for m in matches if m(*cards))
+    match = [m.__name__ for m in matches if m(*cards)]
+    match = match[0] if len(match) > 0 else None
+    if (match):
+        return match
+    # for i in range(len(deck)):
+    #     new_card = deck[i]
+    #     new_cards = cards.copy()
+    #     new_cards.append(new_card)
+    #     new_deck = deck.copy()
+    #     new_deck.pop(i)
+    #     return search(new_cards, new_deck)

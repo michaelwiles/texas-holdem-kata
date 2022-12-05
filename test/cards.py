@@ -30,3 +30,12 @@ def test_search_two_pair():
     search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Diamonds, 3), Card(Suite.Clubs, 3)],
                      None)
     assert_that(search1).is_equal_to('two_pair')
+
+def test_search_no_match():
+    search1 = search([Card(Suite.Spades, 2)],
+                     None)
+    assert_that(search1).is_equal_to(None)
+
+
+def test_search():
+    search([], [Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2)])
