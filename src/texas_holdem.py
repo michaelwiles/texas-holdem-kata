@@ -64,3 +64,10 @@ def two_pair(*cards):
     if len(sets) != 2:
         return False
     return len(sets[keys[0]]) == 2 and len(sets[keys[1]]) == 2
+
+
+matches = [one_pair, two_pair]
+
+
+def search(cards, deck):
+    return next(m.__name__ for m in matches if m(*cards))
