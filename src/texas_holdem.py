@@ -1,3 +1,5 @@
+import string
+
 from functools import total_ordering
 
 from enum import Enum
@@ -11,6 +13,9 @@ class Suite(Enum):
 
 
 lookup = {Suite.Spades: 1, Suite.Hearts: 2, Suite.Diamonds: 3, Suite.Clubs: 4}
+
+values = ['X', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+suites = {'c': Suite.Clubs, 's': Suite.Spades, 'd': Suite.Diamonds, 'h': Suite.Hearts}
 
 
 @total_ordering
@@ -34,26 +39,28 @@ class Card:
 
     def __hash__(self):
         x = 0
-        print(f'hashing card {self.value}, {self.suite}')
         if self.value:
             x += self.value * 10
         if self.suite:
             x += self.suite.__hash__()
         return x
 
+    def __repr__(self):
+        return str(self.value) + ':' + str(self.suite)
 
-class Deck:
-    cards = {}
+    @staticmethod
+    def parse(card_string: string):
+        value = card_string[0]
+        value = values.index(value)
+        suite = suites[card_string[1]]
+        c = Card(suite, value)
+        return c
 
-    def __init__(self, *args):
-        self.cards = {*args}
 
-    def get_min(self):
-        highest = None
-        for card in self.cards:
-            if not highest or card.value < highest.value:
-                highest = card
-        return highest
+def parse_line(line):
+    words = line.split()
+    final = [Card.parse(word) for word in words]
+    return final
 
 
 def one_pair(*cards):
@@ -179,6 +186,9 @@ def two_pair(*cards):
 matches = [
     royal_flush, straight_flush, four_of_a_kind, full_house, flush, straight, three_of_a_kind, two_pair, one_pair]
 
+order = ['royal_flush', 'straight_flush', 'four_of_a_kind', 'full_house', 'flush', 'straight', 'three_of_a_kind',
+         'two_pair', 'one_pair']
+
 
 def search(cards, deck):
     results = set()
@@ -188,14 +198,17 @@ def search(cards, deck):
 
 class Result:
     hand = None
-    cards = []
+    cards = set()
 
     def __init__(self, hand, cards):
         self.hand = hand
-        self.cards = cards
+        self.cards = {*cards}
 
     def __eq__(self, other: object) -> bool:
         return self.hand == other.hand and self.cards == other.cards
+
+    def __repr__(self):
+        return self.hand + ' ' + str(self.cards)
 
     def __hash__(self):
         x = 1
@@ -205,15 +218,25 @@ class Result:
             x += self.cards.__hash__()
         return x
 
+    @property
+    def index(self):
+        return order.index(self.hand)
+
+
+def can_add(r, results):
+    if not results:
+        return True
+    else:
+        newlist = [x for x in results if x.index > r.index]
+        return len(newlist) > 0
+
 
 def search_(cards, deck, results):
     match = [m.__name__ for m in matches if m(*cards)]
     match = match[0] if len(match) > 0 else None
     if match:
         r = Result(match, cards)
-        if r in results:
-            return
-        else:
+        if can_add(r, results):
             results.add(r)
     for i in range(len(deck)):
         new_card = deck[i]

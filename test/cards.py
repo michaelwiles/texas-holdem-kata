@@ -1,14 +1,7 @@
 from assertpy import assert_that
 
-from texas_holdem import Card, Suite, Deck, one_pair, two_pair, search, three_of_a_kind, straight, flush, full_house, \
+from texas_holdem import Card, Suite, one_pair, two_pair, search, three_of_a_kind, straight, flush, full_house, \
     straight_flush, royal_flush, four_of_a_kind
-
-
-def test_lowest():
-    card1 = Card(Suite.Spades, 2)
-    card2 = Card(Suite.Spades, 1)
-    d = Deck(card1, card2)
-    assert_that(d.get_min().value).is_equal_to(1)
 
 
 def test_one_pair():
@@ -98,3 +91,8 @@ def test_search():
                     Card(Suite.Clubs, 2)])
     assert_that(s).is_length(2)
     assert_that(s).extracting('hand').contains('three_of_a_kind')
+
+
+def test_parse_card():
+    assert_that(Card.parse('Kc')).is_equal_to(Card(Suite.Clubs, 13))
+    assert_that(Card.parse('Ts')).is_equal_to(Card(Suite.Spades, 10))
