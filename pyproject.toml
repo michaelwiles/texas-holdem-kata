@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "texas-holdem-1"
+version = "0.1.0"
+description = ""
+authors = ["Michael Wiles <michaelwiles@afrozaar.com>"]
+readme = "README.md"
+packages = [{include = "texas_holdem_1"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pytest = "^7.2.0"
+assertpy = "^1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
