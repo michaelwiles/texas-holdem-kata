@@ -21,6 +21,7 @@ def test_two_pair():
                          Card(Suite.Clubs, 5))).is_false()
 
 
+
 def test_search_one_pair():
     search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2)], None)
     assert_that(search1).is_equal_to('one_pair')
