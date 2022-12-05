@@ -44,3 +44,23 @@ def one_pair(*cards):
         elif number == c.value:
             count = count + 1
     return count == 2
+
+
+def two_pair(*cards):
+    first_pair = {}
+    second_pair = {}
+    first_number = -1
+    second_number = -1
+    if len(cards) != 4:
+        return False
+
+    sets = dict()
+    for c in cards:
+        if c.value not in sets:
+            sets[c.value] = [c]
+        else:
+            sets[c.value].append(c)
+    keys = [*sets.keys()]
+    if len(sets) != 2:
+        return False
+    return len(sets[keys[0]]) == 2 and len(sets[keys[1]]) == 2
