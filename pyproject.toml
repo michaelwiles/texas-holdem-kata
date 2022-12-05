@@ -2,7 +2,7 @@
 name = "texas-holdem-1"
 version = "0.1.0"
 description = ""
-authors = ["Michael Wiles <michaelwiles@afrozaar.com>"]
+authors = ["Michael Wiles <michaelwiles@gmail.com>"]
 readme = "README.md"
 packages = [{include = "texas_holdem_1"}]
 
