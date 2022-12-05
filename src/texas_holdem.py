@@ -22,9 +22,6 @@ class Card:
         self.suite = suite
         self.value = value
 
-    def __repr__(self):
-        return f'{self.value}:{self.suite}'
-
     def __le__(self, other):
         if self.value != other.value:
             return self.value < other.value
@@ -36,7 +33,13 @@ class Card:
         return self.value == other.value and self.suite == other.suite
 
     def __hash__(self):
-        return self.value * 10 + self.suite.__hash__()
+        x = 0
+        print(f'hashing card {self.value}, {self.suite}')
+        if self.value:
+            x += self.value * 10
+        if self.suite:
+            x += self.suite.__hash__()
+        return x
 
 
 class Deck:
@@ -183,14 +186,35 @@ def search(cards, deck):
     return results
 
 
+class Result:
+    hand = None
+    cards = []
+
+    def __init__(self, hand, cards):
+        self.hand = hand
+        self.cards = cards
+
+    def __eq__(self, other: object) -> bool:
+        return self.hand == other.hand and self.cards == other.cards
+
+    def __hash__(self):
+        x = 1
+        if self.hand:
+            x += self.hand.__hash__()
+        if not self.cards:
+            x += self.cards.__hash__()
+        return x
+
+
 def search_(cards, deck, results):
     match = [m.__name__ for m in matches if m(*cards)]
     match = match[0] if len(match) > 0 else None
     if match:
-        if match in results:
+        r = Result(match, cards)
+        if r in results:
             return
         else:
-            results.add(match)
+            results.add(r)
     for i in range(len(deck)):
         new_card = deck[i]
         new_cards = cards.copy()

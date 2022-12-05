@@ -96,4 +96,5 @@ def test_search():
 def test_search():
     s = search([], [Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Clubs, 10),
                     Card(Suite.Clubs, 2)])
-    assert_that(s).is_equal_to('three_of_a_kind')
+    assert_that(s).is_length(2)
+    assert_that(s).extracting('hand').contains('three_of_a_kind')
