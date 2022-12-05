@@ -76,6 +76,15 @@ def three_of_a_kind(*cards):
     return find_duplicates(3, *cards)
 
 
+def flush(*cards):
+    suite = None
+    for card in cards:
+        if suite and card.suite != suite:
+            return False
+        suite = card.suite
+    return True
+
+
 def straight(*cards):
     cards = [*cards]
     cards.sort()
@@ -92,6 +101,25 @@ def straight(*cards):
         index = index + 1
         found = card
     return True
+
+
+def full_house(*cards):
+    if len(cards) != 5:
+        return False
+
+    sets = dict()
+    for c in cards:
+        if c.value not in sets:
+            sets[c.value] = [c]
+        else:
+            sets[c.value].append(c)
+    keys = [*sets.keys()]
+    if len(sets) != 2:
+        return False
+
+    # return len(sets[keys[0]]) == 2 and len(sets[keys[1]]) == 2
+    totals = {len(i) for i in sets.values()}
+    return 2 in totals and 3 in totals
 
 
 def two_pair(*cards):

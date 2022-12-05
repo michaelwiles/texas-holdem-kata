@@ -1,6 +1,6 @@
 from assertpy import assert_that
 
-from texas_holdem import Card, Suite, Deck, one_pair, two_pair, search, three_of_a_kind, straight
+from texas_holdem import Card, Suite, Deck, one_pair, two_pair, search, three_of_a_kind, straight, flush, full_house
 
 
 def test_lowest():
@@ -31,6 +31,19 @@ def test_straight():
     assert_that(straight(Card(Suite.Spades, 3), Card(Suite.Hearts, 10), Card(Suite.Diamonds, 5), Card(Suite.Clubs, 6),
                          Card(Suite.Diamonds, 7))).is_false()
 
+
+def test_flush():
+    assert_that(flush(Card(Suite.Spades, 10), Card(Suite.Spades, 12), Card(Suite.Spades, 2), Card(Suite.Spades, 7),
+                      Card(Suite.Spades, 4))).is_true()
+
+    assert_that(flush(Card(Suite.Spades, 10), Card(Suite.Spades, 12), Card(Suite.Clubs, 2), Card(Suite.Spades, 7),
+                      Card(Suite.Spades, 4))).is_false()
+
+
+def test_full_house():
+    assert_that(
+        full_house(Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Diamonds, 3), Card(Suite.Clubs, 3),
+                 Card(Suite.Hearts, 3))).is_true()
 
 
 def test_search_one_pair():
