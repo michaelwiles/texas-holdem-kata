@@ -27,7 +27,7 @@ class Card:
 
     def __le__(self, other):
         if self.value != other.value:
-            return self.value < self.other
+            return self.value < other.value
         self_suite = lookup[self.suite]
         other_suite = lookup[other.suite]
         return self_suite < other.suite
@@ -77,9 +77,12 @@ def three_of_a_kind(*cards):
 
 
 def straight(*cards):
-    cards.copy().sort()
+    cards = [*cards]
+    cards.sort()
     index = 0
     found = None
+    if len(cards) != 5:
+        return False
     for card in cards:
         if not found:
             found = card
