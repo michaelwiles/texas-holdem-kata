@@ -1,7 +1,7 @@
 from assertpy import assert_that
 
 from texas_holdem import Card, Suite, one_pair, two_pair, search, three_of_a_kind, straight, flush, full_house, \
-    straight_flush, royal_flush, four_of_a_kind
+    straight_flush, royal_flush, four_of_a_kind, parse_line, process
 
 
 def test_one_pair():
@@ -66,19 +66,19 @@ def test_four_of_a_kind():
 
 
 def test_search_one_pair():
-    search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2)], None)
-    assert_that(search1).is_equal_to('one_pair')
+    search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2)])
+    assert_that(search1.hand).is_equal_to('one_pair')
 
 
 def test_search_two_pair():
-    search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Diamonds, 3), Card(Suite.Clubs, 3)],
-                     None)
-    assert_that(search1).is_equal_to('two_pair')
+    search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Diamonds, 3), Card(Suite.Clubs, 3)]
+                     )
+    assert_that(search1.hand).is_equal_to('two_pair')
 
 
 def test_search_no_match():
-    search1 = search([], [Card(Suite.Spades, 2)])
-    assert_that(search1).is_equal_to(None)
+    search1 = search([Card(Suite.Spades, 2)])
+    assert_that(search1.hand).is_equal_to('high_card')
 
 
 def test_search():
@@ -87,12 +87,39 @@ def test_search():
 
 
 def test_search():
-    s = search([], [Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Clubs, 10),
-                    Card(Suite.Clubs, 2)])
-    assert_that(s).is_length(2)
-    assert_that(s).extracting('hand').contains('three_of_a_kind')
+    s = search([Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Clubs, 10),
+                Card(Suite.Clubs, 2)])
+    assert_that(s.hand).is_equal_to('three_of_a_kind')
 
 
 def test_parse_card():
     assert_that(Card.parse('Kc')).is_equal_to(Card(Suite.Clubs, 13))
     assert_that(Card.parse('Ts')).is_equal_to(Card(Suite.Spades, 10))
+
+
+def test_parse_line():
+    assert_that(parse_line('Kc 9s Ks Kd 9d 3c 6d')).contains_only(Card(Suite.Clubs, 13),
+                                                                  Card(Suite.Spades, 9), Card(Suite.Spades, 13),
+                                                                  Card(Suite.Diamonds, 13),
+                                                                  Card(Suite.Diamonds, 9), Card(Suite.Clubs, 3),
+                                                                  Card(Suite.Diamonds, 6))
+
+
+def test_search_1():
+    s = search(parse_line('Kc 9s Ks Kd 9d 3c 6d'))
+    assert_that(s.hand).is_equal_to('full_house')
+    s = search(parse_line('9c Ah Ks Kd 9d 3c 6d'))
+    assert_that(s.hand).is_equal_to('two_pair')
+    s = search(parse_line('4d 2d Ks Kd 9d 3c 6d'))
+    assert_that(s.hand).is_equal_to('flush')
+
+
+def test_process():
+    print("")
+    l = process('9c Ah Ks Kd 9d 3c 6d', '4d 2d Ks Kd 9d 3c 6d', '4d Ks Jh', 'Kc 9s Ks Kd 9d 3c 6d')
+    assert_that(l).contains_only('9c Ah Ks Kd 9d 3c 6d two_pair', '4d 2d Ks Kd 9d 3c 6d flush', '4d Ks Jh high_card',
+                                 'Kc 9s Ks Kd 9d 3c 6d full_house winner')
+
+
+def test_search_with_high_card_decider():
+    process('3c 3s Kd Js', '3c 3h Th 9h')

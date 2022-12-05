@@ -27,7 +27,7 @@ class Card:
         self.suite = suite
         self.value = value
 
-    def __le__(self, other):
+    def __lt__(self, other):
         if self.value != other.value:
             return self.value < other.value
         self_suite = lookup[self.suite]
@@ -59,7 +59,7 @@ class Card:
 
 def parse_line(line):
     words = line.split()
-    final = [Card.parse(word) for word in words]
+    final = {Card.parse(word) for word in words}
     return final
 
 
@@ -186,37 +186,69 @@ def two_pair(*cards):
 matches = [
     royal_flush, straight_flush, four_of_a_kind, full_house, flush, straight, three_of_a_kind, two_pair, one_pair]
 
-order = ['royal_flush', 'straight_flush', 'four_of_a_kind', 'full_house', 'flush', 'straight', 'three_of_a_kind',
-         'two_pair', 'one_pair']
+order = ['high_card', 'one_pair', 'two_pair', 'three_of_a_kind', 'straight', 'flush', 'full_house', 'four_of_a_kind',
+         'straight_flush', 'royal_flush'
+         ]
 
 
-def search(cards, deck):
+def search(deck):
     results = set()
-    search_(cards, deck, results)
+    search_([], [*deck], results)
+    results = [*results]
+    results.sort()
+    if results:
+        return results[-1]
+    else:
+        return Result('high_card', [], [*deck])
+
+
+def process(*lines):
+    results = dict()
+
+    print("")
+    p = {line: search(parse_line(line)) for line in lines}
+    r = [*p.values()]
+    r.sort()
+    results = [f'{k} {v.hand}{" winner" if v == r[-1] else ""}' for k, v in p.items()]
+    # results = [k for k, v in p.items()]
+    for r in results:
+        print(r)
     return results
 
 
+@total_ordering
 class Result:
     hand = None
     cards = set()
+    deck = []
 
-    def __init__(self, hand, cards):
+    def __init__(self, hand, cards, deck):
         self.hand = hand
         self.cards = {*cards}
+        self.deck = deck.copy()
+        self.deck.sort()
 
     def __eq__(self, other: object) -> bool:
-        return self.hand == other.hand and self.cards == other.cards
+        return self.hand == other.hand and self.cards == other.cards and self.deck == other.deck
 
     def __repr__(self):
-        return self.hand + ' ' + str(self.cards)
+        return self.hand + ' ' + str(self.cards) + ' ' + str(self.deck)
 
     def __hash__(self):
-        x = 1
-        if self.hand:
-            x += self.hand.__hash__()
-        if not self.cards:
-            x += self.cards.__hash__()
-        return x
+        return hash((self.hand, tuple(self.cards), tuple(self.deck)))
+
+    def __lt__(self, other):
+        if self.index == other.index:
+            if self.deck and not other.deck:
+                return False
+            elif not self.deck and other.deck:
+                return True
+            elif not self.deck and not other.deck:
+                return False
+            else:
+                return self.deck[-1] < other.deck[-1]
+        else:
+            return self.index < other.index
 
     @property
     def index(self):
@@ -227,7 +259,7 @@ def can_add(r, results):
     if not results:
         return True
     else:
-        newlist = [x for x in results if x.index > r.index]
+        newlist = [x for x in results if x.index < r.index]
         return len(newlist) > 0
 
 
@@ -235,7 +267,7 @@ def search_(cards, deck, results):
     match = [m.__name__ for m in matches if m(*cards)]
     match = match[0] if len(match) > 0 else None
     if match:
-        r = Result(match, cards)
+        r = Result(match, cards, deck)
         if can_add(r, results):
             results.add(r)
     for i in range(len(deck)):
