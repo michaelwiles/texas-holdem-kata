@@ -1,13 +1,19 @@
+from functools import total_ordering
+
 from enum import Enum
 
 
 class Suite(Enum):
-    Spades = 1
-    Hearts = 2
-    Diamonds = 3
-    Clubs = 4
+    Spades = 'Spades'
+    Hearts = 'Hearts'
+    Diamonds = 'Diamonds'
+    Clubs = 'Clubs'
 
 
+lookup = {Suite.Spades: 1, Suite.Hearts: 2, Suite.Diamonds: 3, Suite.Clubs: 4}
+
+
+@total_ordering
 class Card:
     suite = None
     value = -1
@@ -15,6 +21,22 @@ class Card:
     def __init__(self, suite, value):
         self.suite = suite
         self.value = value
+
+    def __repr__(self):
+        return f'{self.value}:{self.suite}'
+
+    def __le__(self, other):
+        if self.value != other.value:
+            return self.value < self.other
+        self_suite = lookup[self.suite]
+        other_suite = lookup[other.suite]
+        return self_suite < other.suite
+
+    def __eq__(self, other):
+        return self.value == other.value and self.suite == other.suite
+
+    def __hash__(self):
+        return self.value * 10 + self.suite.__hash__()
 
 
 class Deck:
@@ -32,9 +54,13 @@ class Deck:
 
 
 def one_pair(*cards):
+    return find_duplicates(2, *cards)
+
+
+def find_duplicates(number_of_duplicate, *cards):
     number = None
     count = 0
-    if len(cards) != 2:
+    if len(cards) != number_of_duplicate:
         return False
 
     for c in cards:
@@ -43,14 +69,29 @@ def one_pair(*cards):
             count = count + 1
         elif number == c.value:
             count = count + 1
-    return count == 2
+    return count == number_of_duplicate
+
+
+def three_of_a_kind(*cards):
+    return find_duplicates(3, *cards)
+
+
+def straight(*cards):
+    cards.copy().sort()
+    index = 0
+    found = None
+    for card in cards:
+        if not found:
+            found = card
+            index = index + 1
+        elif found.value + 1 != card.value:
+            return False
+        index = index + 1
+        found = card
+    return True
 
 
 def two_pair(*cards):
-    first_pair = {}
-    second_pair = {}
-    first_number = -1
-    second_number = -1
     if len(cards) != 4:
         return False
 
@@ -74,10 +115,12 @@ def search(cards, deck):
     match = match[0] if len(match) > 0 else None
     if (match):
         return match
-    # for i in range(len(deck)):
-    #     new_card = deck[i]
-    #     new_cards = cards.copy()
-    #     new_cards.append(new_card)
-    #     new_deck = deck.copy()
-    #     new_deck.pop(i)
-    #     return search(new_cards, new_deck)
+    for i in range(len(deck)):
+        new_card = deck[i]
+        new_cards = cards.copy()
+        new_cards.append(new_card)
+        new_deck = deck.copy()
+        new_deck.pop(i)
+        s = search(new_cards, new_deck)
+        if s:
+            return s

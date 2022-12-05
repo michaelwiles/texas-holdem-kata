@@ -1,6 +1,6 @@
 from assertpy import assert_that
 
-from texas_holdem import Card, Suite, Deck, one_pair, two_pair, search
+from texas_holdem import Card, Suite, Deck, one_pair, two_pair, search, three_of_a_kind
 
 
 def test_lowest():
@@ -21,6 +21,9 @@ def test_two_pair():
                          Card(Suite.Clubs, 5))).is_false()
 
 
+def test_three_of_a_kind():
+    assert_that(three_of_a_kind(Card(Suite.Spades, 3), Card(Suite.Hearts, 3), Card(Suite.Diamonds, 3))).is_true()
+
 
 def test_search_one_pair():
     search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2)], None)
@@ -32,11 +35,12 @@ def test_search_two_pair():
                      None)
     assert_that(search1).is_equal_to('two_pair')
 
+
 def test_search_no_match():
-    search1 = search([Card(Suite.Spades, 2)],
-                     None)
+    search1 = search([], [Card(Suite.Spades, 2)])
     assert_that(search1).is_equal_to(None)
 
 
 def test_search():
-    search([], [Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2)])
+    s = search([], [Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2)])
+    print(s)
