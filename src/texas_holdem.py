@@ -103,6 +103,14 @@ def straight(*cards):
     return True
 
 
+def royal_flush(*cards):
+    cards = [*cards]
+    cards.sort()
+    if cards[0].value != 10:
+        return False
+    return straight_flush(*cards)
+
+
 def straight_flush(*cards):
     cards = [*cards]
     cards.sort()
