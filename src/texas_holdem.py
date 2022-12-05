@@ -103,6 +103,24 @@ def straight(*cards):
     return True
 
 
+def straight_flush(*cards):
+    cards = [*cards]
+    cards.sort()
+    index = 0
+    found = None
+    if len(cards) != 5:
+        return False
+    for card in cards:
+        if not found:
+            found = card
+            index = index + 1
+        elif found.value + 1 != card.value or found.suite != card.suite:
+            return False
+        index = index + 1
+        found = card
+    return True
+
+
 def full_house(*cards):
     if len(cards) != 5:
         return False
