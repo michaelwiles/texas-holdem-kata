@@ -30,7 +30,7 @@ class Card:
             return self.value < other.value
         self_suite = lookup[self.suite]
         other_suite = lookup[other.suite]
-        return self_suite < other.suite
+        return self_suite < other_suite
 
     def __eq__(self, other):
         return self.value == other.value and self.suite == other.suite
@@ -72,12 +72,18 @@ def find_duplicates(number_of_duplicate, *cards):
     return count == number_of_duplicate
 
 
+def four_of_a_kind(*cards):
+    return find_duplicates(4, *cards)
+
+
 def three_of_a_kind(*cards):
     return find_duplicates(3, *cards)
 
 
 def flush(*cards):
     suite = None
+    if len(cards) != 5:
+        return False
     for card in cards:
         if suite and card.suite != suite:
             return False
@@ -106,9 +112,12 @@ def straight(*cards):
 def royal_flush(*cards):
     cards = [*cards]
     cards.sort()
-    if cards[0].value != 10:
+    if len(cards) != 5:
         return False
-    return straight_flush(*cards)
+    elif cards[0].value != 10:
+        return False
+    else:
+        return straight_flush(*cards)
 
 
 def straight_flush(*cards):
@@ -164,20 +173,29 @@ def two_pair(*cards):
     return len(sets[keys[0]]) == 2 and len(sets[keys[1]]) == 2
 
 
-matches = [one_pair, two_pair]
+matches = [
+    royal_flush, straight_flush, four_of_a_kind, full_house, flush, straight, three_of_a_kind, two_pair, one_pair]
 
 
 def search(cards, deck):
+    results = set()
+    search_(cards, deck, results)
+    return results
+
+
+def search_(cards, deck, results):
     match = [m.__name__ for m in matches if m(*cards)]
     match = match[0] if len(match) > 0 else None
-    if (match):
-        return match
+    if match:
+        if match in results:
+            return
+        else:
+            results.add(match)
     for i in range(len(deck)):
         new_card = deck[i]
         new_cards = cards.copy()
         new_cards.append(new_card)
         new_deck = deck.copy()
         new_deck.pop(i)
-        s = search(new_cards, new_deck)
-        if s:
-            return s
+        search_(new_cards, new_deck, results)
+    return results

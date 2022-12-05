@@ -1,7 +1,7 @@
 from assertpy import assert_that
 
 from texas_holdem import Card, Suite, Deck, one_pair, two_pair, search, three_of_a_kind, straight, flush, full_house, \
-    straight_flush, royal_flush
+    straight_flush, royal_flush, four_of_a_kind
 
 
 def test_lowest():
@@ -63,6 +63,15 @@ def test_full_house():
                    Card(Suite.Hearts, 3))).is_true()
 
 
+def test_four_of_a_kind():
+    assert_that(
+        four_of_a_kind(Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Diamonds, 2),
+                       Card(Suite.Clubs, 2))).is_true()
+    assert_that(
+        four_of_a_kind(Card(Suite.Spades, 2), Card(Suite.Hearts, 3), Card(Suite.Diamonds, 2),
+                       Card(Suite.Clubs, 2))).is_false()
+
+
 def test_search_one_pair():
     search1 = search([Card(Suite.Spades, 2), Card(Suite.Hearts, 2)], None)
     assert_that(search1).is_equal_to('one_pair')
@@ -82,3 +91,9 @@ def test_search_no_match():
 def test_search():
     s = search([], [Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2)])
     print(s)
+
+
+def test_search():
+    s = search([], [Card(Suite.Diamonds, 3), Card(Suite.Spades, 2), Card(Suite.Hearts, 2), Card(Suite.Clubs, 10),
+                    Card(Suite.Clubs, 2)])
+    assert_that(s).is_equal_to('three_of_a_kind')
