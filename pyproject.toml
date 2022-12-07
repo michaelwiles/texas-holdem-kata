@@ -1,13 +1,16 @@
 [tool.poetry]
-name = "texas-holdem-1"
+name = "texas_holdem"
 version = "0.1.0"
 description = ""
 authors = ["Michael Wiles <michaelwiles@gmail.com>"]
 readme = "README.md"
-packages = [{include = "texas_holdem_1"}]
+packages = [{include = "texas_holdem", from ="src"}]
+include = [
+    "tests/**/*",
+]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10.0"
 pytest = "^7.2.0"
 assertpy = "^1.1"
 

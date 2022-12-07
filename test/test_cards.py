@@ -1,6 +1,6 @@
 from assertpy import assert_that
 
-from texas_holdem import Card, Suite, one_pair, two_pair, search, three_of_a_kind, straight, flush, full_house, \
+from texas_holdem.texas_holdem import Card, Suite, one_pair, two_pair, search, three_of_a_kind, straight, flush, full_house, \
     straight_flush, royal_flush, four_of_a_kind, parse_line, process
 
 
